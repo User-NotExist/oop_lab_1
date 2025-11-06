@@ -1,13 +1,28 @@
-import csv, os
+from pathlib import Path
+import csv
 
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+class DataLoader:
+    '''Handle the loading of CSV file'''
+    def __init__(self, base_path=None):
+        if base_path is None:
+            self.base_path = Path(__file__).parent.resolve()
+        else:
+            self.base_path = Path(base_path)
 
-cities = []
-with open(os.path.join(__location__, 'Cities.csv')) as f:
-    rows = csv.DictReader(f)
-    for r in rows:
-        cities.append(dict(r))
+    def load_csv(self, filename):
+        filepath = self.base_path / filename
+
+        temp = []
+
+        with open(filepath) as f:
+            rows = csv.DictReader(f)
+            for r in rows:
+                temp.append(r)
+
+        return temp
+
+loader = DataLoader()
+cities = loader.load_csv('Cities')
 
 # Print first 5 cities only
 for city in cities[:5]:

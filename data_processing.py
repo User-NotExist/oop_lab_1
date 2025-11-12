@@ -27,15 +27,56 @@ class DataLoader:
         return data
 
 
-class DB:
-    """Your code here"""
-
-
 class Table:
-    """Your code here"""
+    def __init__(self, table_name, table):
+        self.table_name = table_name
+        self.table = table
+
+    def filter(self, condition):
+        tmp = []
+        for item in self.table:
+            if condition(item):
+                tmp.append(item)
+
+        return Table("", tmp)
+
+    # Let's write a function to do aggregation given an aggregation function and an aggregation key
+    def aggregate(self,aggregation_function, aggregation_key):
+        tmp = []
+        for i in self.table:
+            try:
+                tmp.append(float(i[aggregation_key]))
+            except ValueError:
+                tmp.append(i[aggregation_key])
+
+        return Table("", aggregation_function(tmp))
+
+    def join(self, joining, join_key):
+        new = self.table.copy()
+        for i in new:
+            for j in joining.table:
+                if i[join_key] == j[join_key]:
+                    i.update(j)
+
+        return Table("", new)
 
     def __str__(self):
         return self.table_name + ':' + str(self.table)
+
+
+class DB:
+    def __init__(self):
+        self.__tables = []
+
+    def insert(self, table: Table):
+        self.__tables.append(table)
+
+    def search(self, table_name):
+        for i in self.__tables:
+            if i.table_name == table_name:
+                return i
+
+        return None
 
 
 loader = DataLoader()
